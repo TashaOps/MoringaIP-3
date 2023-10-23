@@ -1,0 +1,20 @@
+--- 
+- name: Run MongoDB container
+  docker_container:
+    name: mongodb
+    image: mongo:latest
+    state: started
+    ports:
+      - "{{ mongodb_port }}:{{ mongodb_port }}"
+
+- name: Run Docker container with MongoDB link
+  docker_container:
+    name: "{{ docker_image_name }}"
+    image: "{{ docker_image_name }}:{{ docker_image_tag }}"
+    state: started
+    ports:
+      - "27017:27017"
+    links:
+      - mongodb
+    env:
+      MONGO_URI: "mongodb://mongodb:{{ mongodb_port }}"

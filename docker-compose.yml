@@ -1,0 +1,43 @@
+version: '3'
+services:
+    client:
+        image: tashaops/docker-client:1.0
+        restart: always
+        ports:
+            - "3000:3000"
+        #working_dir: /client
+        volumes:
+            - ./client:/client
+            - /client/node_modules
+        depends_on:
+            - backend
+        entrypoint: ["npm","start"]
+        networks:
+            - yolonetwork
+    backend:
+        image: tashaops/docker-backend:1.0
+        restart: always
+        ports:
+            - "5000:5000"    
+            #working_dir: /backend
+        volumes:
+            - ./backend:/backend
+            - /backend/node_modules
+        depends_on:
+            - mongodb
+        networks:
+            - yolonetwork
+    mongodb:
+        image: mongo
+        restart: always
+        container_name: mongodb
+        volumes:
+            - ./data-node:/data/db
+        ports:
+            - 27017:27017
+        networks:
+            - yolonetwork
+
+networks:
+    yolonetwork:
+        driver: bridge

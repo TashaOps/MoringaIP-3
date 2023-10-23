@@ -1,0 +1,13 @@
+---         
+- name: Build Client Docker image
+  command: docker build -t "{{ client_docker_image_name }}:{{ client_docker_image_tag }}" .
+  args:
+    chdir: "{{ clone_dest_path }}/client"
+
+- name: Run Docker container
+  docker_container:
+    name: "{{ docker_image_name }}"
+    image: "{{ client_docker_image_name }}:{{ client_docker_image_tag }}"
+    state: started
+    ports:
+      - "3000:3000"   

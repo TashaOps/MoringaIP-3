@@ -1,0 +1,13 @@
+---         
+- name: Build Backend Docker image
+  command: docker build -t "{{ backend_docker_image_name }}:{{ backend_docker_image_tag }}" .
+  args:
+    chdir: "{{ clone_dest_path }}/backend"
+
+- name: Run Docker container
+  docker_container:
+    name: "{{ docker_image_name }}"
+    image: "{{ backend_docker_image_name }}:{{ backend_docker_image_tag }}"
+    state: started
+    ports:
+      - "5000:5000"   

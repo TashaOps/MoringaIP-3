@@ -1,0 +1,113 @@
+ ---
+- name: Run Yolo App
+  hosts: all
+  become: true
+
+  vars:
+    git_repo_url: https://github.com/TashaOps/Docker-IP
+    clone_dest_path: ~/home/oem/IP-3
+    client_docker_image_name: tashaops/docker-client
+    client_docker_image_tag: 1.0
+    backend_docker_image_name: tashaops/docker-backend
+    backend_docker_image_tag: 1.0
+    docker_image_name: IP-3
+    docker_image_tag: latest
+    mongodb_port: 27017
+
+  roles:
+  
+    - role: Install Git and Docker
+      block: 
+        - name: Install Git and Docker
+          apt:
+            name:
+              - git
+              - docker.io
+            state: present
+          become: true  
+      tags:
+        -gitInstall
+          
+    - role: Clone repo
+      block: 
+        - name: Install Git and Docker
+          git:
+            repo: "{{ git_repo_url }}"
+            dest: "{{ clone_dest_path }}"
+          become: true 
+      tags:
+        -cloneRepo     
+    
+    - role: build mongodb
+      block:
+        - name: Run MongoDB container
+          docker_container:
+              name: mongodb
+              image: mongo:latest
+              state: started
+              ports:
+                - "{{ mongodb_port }}:{{ mongodb_port }}"
+
+        - name: Run Docker container with MongoDB link
+          docker_container:
+              name: "{{ docker_image_name }}"
+              image: "{{ docker_image_name }}:{{ docker_image_tag }}"
+              state: started
+              ports:
+                - "27017:27017"
+              links:
+                - mongodb
+              env:
+                MONGO_URI: "mongodb://mongodb:{{ mongodb_port }}"
+      tags:
+        - mongodb
+        
+    - role: build backend container
+      block:
+        - name: Build Backend Docker image
+          command: docker build -t "{{ backend_docker_image_name }}:{{ backend_docker_image_tag }}" .
+          args:
+            chdir: "{{ clone_dest_path }}/backend"
+
+        - name: Run Docker container
+          docker_container:
+            name: "{{ docker_image_name }}"
+            image: "{{ backend_docker_image_name }}:{{ backend_docker_image_tag }}"
+            state: started
+            ports:
+              - "5000:5000"  
+      tags:
+        - backend   
+        
+    - role: build client container
+      block:
+        - name: Build Client Docker image
+          command: docker build -t "{{ client_docker_image_name }}:{{ client_docker_image_tag }}" .
+          args:
+            chdir: "{{ clone_dest_path }}/client"
+
+        - name: Run Docker container
+          docker_container:
+            name: "{{ docker_image_name }}"
+            image: "{{ client_docker_image_name }}:{{ client_docker_image_tag }}"
+            state: started
+            ports:
+              - "3000:3000"  
+      tags:
+        - client 
+
+
+
+    - role: provision_infrastructure
+      vars:
+        app_name: "IP-3"
+        region: "us-west-2"
+        instance_type: "t2.micro"
+        mongodb_port: "{{ mongodb_port }}"
+        client_port: "3000"
+        backend_port: "5000"
+        app_path: "{{ clone_dest_path }}"
+      tags:
+        - infrastructure
+          
+          
