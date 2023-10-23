@@ -20,9 +20,9 @@ I created **ansible.cfg** which is a configurations file that contains our defau
 
 I created the **roles** folder which contains our tasks to deploy our applications executed by the playbook.yml file.
 
-After creating roles, I populated each with a **main.yml file**.
+After creating roles, I populated each with a **main.yml file**, each stating its own ansible tasks.
 
-I then created **playbook.yml** in the root directory of the project.
+I then created **playbook.yml** in the root directory of the project, this file included the roles stated above.
 
 Then proceeded to deploy the app.
 
