@@ -27,7 +27,7 @@ I then created **playbook.yml** in the root directory of the project, this file 
 Then proceeded to deploy the app.
 
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
+# IP-4
 **Choice of the Kubernetes Objects used for deployment**( Use of - or the lack of use - of StatefulSets for storage solutions).
     - StatefulSets: StatefulSets are used for the deployment of MongoDB, which requires persistent storage. StatefulSets are used to ensure that the MongoDB pods are deployed in a predictable and ordered manner, with each pod having a unique and stable hostname. 
     - Persistent Volumes: Persistent Volumes (PVs) are used to provide persistent storage for StatefulSets. In the code, a mongodb-data volume claim template is defined for the MongoDB StatefulSet, 
@@ -37,6 +37,7 @@ Then proceeded to deploy the app.
 
 **Use-of or there-lack-of of persistent storage**
     - StatefulSet is used to deploy the MongoDB application, which includes the definition of a mongodb-statefulset that specifies a volumeClaimTemplate for persistent storage. This volumeClaimTemplate is used to dynamically create PersistentVolumeClaims (PVCs) for each replica of the MongoDB StatefulSet. The PVCs are bound to available PersistentVolumes (PVs) in the cluster, providing persistent storage for the MongoDB data. This ensures that the data stored in MongoDB persists even if the pod or node where MongoDB is running fails or is rescheduled to a different nod.
+    
 
 
 
