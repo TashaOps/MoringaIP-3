@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: yolo-client-app
+spec:
+  selector:
+    matchLabels:
+      app: yolo-client-app
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: client-container
+        image: tashaops/docker-client:1.0
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 3000

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: ip4_statefulset
+spec:
+  selector:
+    matchLabels:
+      app: my-yolo-app
+  serviceName: yolo-mongo-service
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: my-yolo-app
+    spec:
+      containers:
+      - name: my-yolo-app
+        image: mongo
+        ports:
+        - containerPort: 27017
+          name: db
+        volumeMounts:
+        - name: databasevol
+          mountPath: /usr/share/nginx/html
+  volumeClaimTemplates:
+  - metadata:
+      name: databasevol
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
